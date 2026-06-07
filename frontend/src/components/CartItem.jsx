@@ -1,37 +1,57 @@
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
 
   return (
-    <div className="flex items-center gap-4 p-4 hover:bg-gray-50 transition">
-      <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
-      <div className="flex-1">
-        <h3 className="font-semibold">{item.name}</h3>
-        <p className="text-primary font-bold">${item.price}</p>
+    <div className="cart-item">
+      {/* Image */}
+      <Link to={`/product/${item.id}`}>
+        <img
+          src={item.image}
+          alt={item.name}
+          className="cart-item-img"
+        />
+      </Link>
+
+      {/* Info */}
+      <div>
+        <Link to={`/product/${item.id}`} className="cart-item-name">
+          {item.name}
+        </Link>
+        <p className="cart-item-price">${(item.price * item.quantity).toFixed(2)}</p>
+        <div className="cart-item-qty">
+          <button
+            className="cart-qty-btn"
+            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            aria-label="Decrease quantity"
+          >
+            <Minus size={13} />
+          </button>
+          <span className="cart-qty-num">{item.quantity}</span>
+          <button
+            className="cart-qty-btn"
+            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            aria-label="Increase quantity"
+          >
+            <Plus size={13} />
+          </button>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginLeft: '0.25rem' }}>
+            × ${item.price} each
+          </span>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <button 
-          onClick={() => updateQuantity(item.id, item.quantity - 1)} 
-          className="p-1 hover:bg-gray-100 rounded transition"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
-        <span className="w-8 text-center font-medium">{item.quantity}</span>
-        <button 
-          onClick={() => updateQuantity(item.id, item.quantity + 1)} 
-          className="p-1 hover:bg-gray-100 rounded transition"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-        <button 
-          onClick={() => removeFromCart(item.id)} 
-          className="ml-2 p-1 text-red-500 hover:bg-red-50 rounded transition"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
+
+      {/* Remove */}
+      <button
+        className="cart-item-remove"
+        onClick={() => removeFromCart(item.id)}
+        aria-label="Remove item"
+      >
+        <X size={15} />
+      </button>
     </div>
   );
 };

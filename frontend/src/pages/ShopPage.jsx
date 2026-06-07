@@ -1,5 +1,22 @@
+// frontend/src/pages/ShopPage.jsx
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
+import { Search } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const FALLBACK_PRODUCTS = [
+  { _id: '1', id: '1', name: 'Elegant Velvet Evening Gown', price: 189.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', rating: 4.8, stock: 12 },
+  { _id: '2', id: '2', name: 'Vibrant Satin Midi Dress', price: 95.00, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', rating: 4.7, stock: 15 },
+  { _id: '3', id: '3', name: 'Classic Beige Trench Coat', price: 149.99, category: 'Outerwear', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', rating: 4.6, stock: 10 },
+  { _id: '4', id: '4', name: 'Floral Summer Sundress', price: 79.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600', rating: 4.5, stock: 20 },
+  { _id: '5', id: '5', name: 'Structured Blazer Jacket', price: 129.99, category: "Men's Wear", image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600', rating: 4.9, stock: 8 },
+  { _id: '6', id: '6', name: 'Diamond Drop Earrings', price: 299.00, category: 'Jewelry', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600', rating: 4.9, stock: 5 },
+  { _id: '7', id: '7', name: 'Leather Crossbody Bag', price: 159.99, category: 'Bags', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=600', rating: 4.7, stock: 14 },
+  { _id: '8', id: '8', name: 'Classic Leather Loafers', price: 125.00, category: 'Shoes', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600', rating: 4.6, stock: 18 },
+  { _id: '9', id: '9', name: 'Kids Denim Overalls', price: 45.00, category: 'Kids', image: 'https://images.unsplash.com/photo-1519238263530-99b50bc56a29?w=600', rating: 4.8, stock: 20 },
+  { _id: '10', id: '10', name: 'Vintage Sunglasses', price: 55.00, category: 'Accessories', image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600', rating: 4.5, stock: 30 },
+];
 
 const ShopPage = () => {
   const [products, setProducts] = useState([]);
@@ -8,19 +25,22 @@ const ShopPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Sample products data
-    const sampleProducts = [
-      { id: 1, name: 'Modern Leather Backpack', price: 89.99, category: 'Bags', image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400', rating: 4.5, stock: 15 },
-      { id: 2, name: 'Wireless Headphones Pro', price: 199.99, category: 'Electronics', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', rating: 4.8, stock: 8 },
-      { id: 3, name: 'Minimalist Watch', price: 149.99, category: 'Accessories', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', rating: 4.6, stock: 12 },
-      { id: 4, name: 'Classic White Sneakers', price: 79.99, category: 'Footwear', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', rating: 4.7, stock: 20 },
-      { id: 5, name: 'Sunglasses Ultra', price: 59.99, category: 'Accessories', image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400', rating: 4.4, stock: 25 },
-      { id: 6, name: 'Smart Watch Series X', price: 299.99, category: 'Electronics', image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400', rating: 4.9, stock: 5 },
-      { id: 7, name: 'Designer Handbag', price: 249.99, category: 'Bags', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400', rating: 4.7, stock: 10 },
-      { id: 8, name: 'Sports Shoes', price: 119.99, category: 'Footwear', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', rating: 4.6, stock: 18 },
-    ];
-    setProducts(sampleProducts);
-    setLoading(false);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get('/products');
+        if (res.data && res.data.length > 0) {
+          setProducts(res.data);
+        } else {
+          setProducts(FALLBACK_PRODUCTS);
+        }
+      } catch (error) {
+        console.error('Error fetching shop products:', error);
+        setProducts(FALLBACK_PRODUCTS);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
   const categories = ['all', ...new Set(products.map(p => p.category))];
@@ -32,32 +52,41 @@ const ShopPage = () => {
   });
 
   if (loading) {
-    return <div className="text-center py-20">Loading products...</div>;
+    return (
+      <div className="wishlist-loading-container">
+        <div className="wishlist-loader"></div>
+        <p>Gathering the collection...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">All Products</h1>
-      
-      {/* Search and Filter */}
-      <div className="mb-8 flex flex-col md:flex-row gap-4 justify-between">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none md:w-64"
-        />
-        <div className="flex gap-2 flex-wrap">
+    <div className="shop-page-wrapper">
+      <div className="shop-page-header container-max" style={{ marginBottom: '2.5rem' }}>
+        <span className="shop-badge">✦ RUNWAY READY</span>
+        <h1>The Collection</h1>
+        <p>Explore high-end couture, tailored outerwear, and elegant designs.</p>
+      </div>
+
+      <div className="shop-controls-container container-max" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '3.5rem' }}>
+        {/* Search */}
+        <div className="shop-search-bar" style={{ maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+          <input
+            type="text"
+            placeholder="Search outfits..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #ccc' }}
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="shop-category-filters" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg capitalize transition ${
-                selectedCategory === cat 
-                  ? 'bg-primary text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`filter-btn ${selectedCategory === cat ? 'active' : ''}`}
             >
               {cat}
             </button>
@@ -65,17 +94,24 @@ const ShopPage = () => {
         </div>
       </div>
       
-      {filteredProducts.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500">No products found</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
+      <div className="shop-products-grid-container container-max">
+        {filteredProducts.length === 0 ? (
+          <div className="shop-no-results">
+            <p>No outfits match your criteria. Try another search or filter.</p>
+          </div>
+        ) : (
+          <motion.div 
+            className="shop-products-grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {filteredProducts.map(product => (
+              <ProductCard key={product._id || product.id} product={product} />
+            ))}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };

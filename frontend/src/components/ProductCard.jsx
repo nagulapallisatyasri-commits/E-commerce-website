@@ -1,40 +1,95 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Star } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useWishlist } from '../context/WishlistContext';
+import { ShoppingCart, Star, Heart } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  
+  const id = product._id || product.id;
+  const isWishlisted = isInWishlist(id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    addToCart(product);
+    // Ensure both MongoDB fields and mock fields map to cart expectations
+    const cartProduct = {
+      id: id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      stock: product.stock || 10,
+      rating: product.rating || 4.5
+    };
+    addToCart(cartProduct);
   };
 
+  const handleWishlist = (e) => {
+    e.preventDefault();
+    // Wrap product cleanly to pass to wishlist
+    const wishlistProduct = {
+      _id: id,
+      id: id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      stock: product.stock || 10,
+      rating: product.rating || 4.5
+    };
+    toggleWishlist(wishlistProduct);
+  };
+
+  const originalPrice = (product.price * 1.25).toFixed(2);
+
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg card-hover group">
-      <Link to={`/product/${product.id}`}>
-        <div className="relative overflow-hidden h-64">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-          <div className="absolute top-4 right-4 bg-accent text-white px-2 py-1 rounded-full text-sm font-semibold">
-            -20%
-          </div>
+    <div className="product-card">
+      <Link to={`/product/${id}`}>
+        <div className="product-card-img-wrap">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="product-card-img"
+          />
+          <span className="product-card-badge">-20%</span>
+          <button
+            className={`product-card-wishlist ${isWishlisted ? 'active' : ''}`}
+            onClick={handleWishlist}
+            aria-label="Toggle wishlist"
+          >
+            <Heart size={15} className={isWishlisted ? 'fill-pink text-pink' : ''} />
+          </button>
         </div>
       </Link>
-      <div className="p-5">
-        <Link to={`/product/${product.id}`}>
-          <h3 className="text-lg font-semibold mb-2 hover:text-primary transition-colors line-clamp-1">{product.name}</h3>
+
+      <div className="product-card-body">
+        <Link to={`/product/${id}`} className="product-card-name">
+          {product.name}
         </Link>
-        <div className="flex items-center gap-1 mb-3">
+
+        <div className="product-card-stars">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+            <Star
+              key={i}
+              size={14}
+              className={i < Math.floor(product.rating || 4.0) ? 'star-filled' : 'star-empty'}
+            />
           ))}
-          <span className="text-sm text-gray-500 ml-2">({product.rating})</span>
+          <span className="product-card-rating-text">({product.rating || 4.0})</span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-2xl font-bold text-primary">${product.price}</span>
-          <button onClick={handleAddToCart} className="bg-primary text-white p-2 rounded-full hover:bg-secondary transition-colors hover:scale-110 transform">
-            <ShoppingCart className="w-5 h-5" />
+
+        <div className="product-card-footer">
+          <div>
+            <span className="product-card-price">${product.price}</span>
+            <span className="product-card-price-old">${originalPrice}</span>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            className="product-card-add"
+            aria-label="Add to cart"
+          >
+            <ShoppingCart size={17} />
           </button>
         </div>
       </div>

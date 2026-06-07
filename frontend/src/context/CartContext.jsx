@@ -1,4 +1,3 @@
-// frontend/src/context/CartContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -7,48 +6,57 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems]   = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  /* Hydrate from localStorage on mount */
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
+    try {
+      const saved = localStorage.getItem('shopvibe_cart');
+      if (saved) setCartItems(JSON.parse(saved));
+    } catch (_) {}
   }, []);
 
+  /* Persist + recalculate total */
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-    const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    try {
+      localStorage.setItem('shopvibe_cart', JSON.stringify(cartItems));
+    } catch (_) {}
+    const total = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
     setTotalAmount(total);
   }, [cartItems]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(i => i.id === product.id);
       if (existing) {
-        toast.success(`Added another ${product.name} to cart`);
-        return prev.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+        toast.success(`Added another ${product.name} to cart`, {
+          style: { fontFamily: 'Sora, sans-serif', fontSize: '0.9rem' },
+          iconTheme: { primary: '#E8956D', secondary: '#fff' },
+        });
+        return prev.map(i =>
+          i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-      toast.success(`${product.name} added to cart`);
+      toast.success(`${product.name} added to cart`, {
+        style: { fontFamily: 'Sora, sans-serif', fontSize: '0.9rem' },
+        iconTheme: { primary: '#E8956D', secondary: '#fff' },
+      });
       return [...prev, { ...product, quantity }];
     });
   };
 
   const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item.id !== productId));
-    toast.success('Item removed from cart');
+    setCartItems(prev => prev.filter(i => i.id !== productId));
+    toast.success('Item removed from cart', {
+      style: { fontFamily: 'Sora, sans-serif', fontSize: '0.9rem' },
+    });
   };
 
   const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) {
-      removeFromCart(productId);
-      return;
-    }
+    if (quantity < 1) { removeFromCart(productId); return; }
     setCartItems(prev =>
-      prev.map(item => (item.id === productId ? { ...item, quantity } : item))
+      prev.map(i => (i.id === productId ? { ...i, quantity } : i))
     );
   };
 

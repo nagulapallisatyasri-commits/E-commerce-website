@@ -1,101 +1,453 @@
+// frontend/src/pages/LandingPage.jsx
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Truck, Shield, Clock, Sparkles, TrendingUp, Award } from 'lucide-react';
+import axios from 'axios';
+import {
+  ArrowRight, ShoppingBag, Truck, Shield, RotateCcw,
+  Award, Sparkles, Star, Zap, Percent
+} from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Hero Fashion Slides
+const SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800',
+    tagTop: 'New Collection ✦',
+    tagBot: 'Luxury Satin',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800',
+    tagTop: 'Best Seller 🔥',
+    tagBot: 'Summer Chic',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
+    tagTop: 'Premium Quality',
+    tagBot: 'Evening Wear ✦',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800',
+    tagTop: 'Buy Now 🛍️',
+    tagBot: 'Boho Maxi',
+  },
+];
+
+// Fallback Featured Products (Fashion/Dresses theme)
+const FALLBACK_FEATURED = [
+  { _id: '1', id: '1', name: 'Elegant Velvet Evening Gown', price: 189.99, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', rating: 4.8, category: 'Dresses' },
+  { _id: '2', id: '2', name: 'Vibrant Satin Midi Dress', price: 95.00, image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', rating: 4.7, category: 'Dresses' },
+  { _id: '3', id: '3', name: 'Classic Beige Trench Coat', price: 149.99, image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', rating: 4.6, category: 'Outerwear' },
+  { _id: '4', id: '4', name: 'Floral Summer Sundress', price: 79.99, image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600', rating: 4.5, category: 'Dresses' },
+];
 
 const LandingPage = () => {
-  const featuredProducts = [
-    { id: 1, name: 'Modern Leather Backpack', price: 89.99, image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400', rating: 4.5 },
-    { id: 2, name: 'Wireless Headphones Pro', price: 199.99, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', rating: 4.8 },
-    { id: 3, name: 'Minimalist Watch', price: 149.99, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', rating: 4.6 },
-    { id: 4, name: 'Classic White Sneakers', price: 79.99, image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', rating: 4.7 },
-  ];
+  const [slide, setSlide] = useState(0);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Auto-rotate Hero Image Slides every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlide((s) => (s + 1) % SLIDES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle Hash Scroll
+  useEffect(() => {
+    if (window.location.hash === '#about-us') {
+      setTimeout(() => {
+        const element = document.getElementById('about-us');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [window.location.hash]);
+
+  // Fetch Featured Products from backend (Seeded MongoDB)
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await axios.get('/products');
+        if (res.data && res.data.length > 0) {
+          setFeaturedProducts(res.data.slice(0, 4));
+        } else {
+          setFeaturedProducts(FALLBACK_FEATURED);
+        }
+      } catch (error) {
+        console.error('Error fetching featured products:', error);
+        setFeaturedProducts(FALLBACK_FEATURED);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  const currentSlide = SLIDES[slide];
+
+  // Scroll to Categories handler
+  const scrollToCategories = () => {
+    const element = document.getElementById('categories-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 py-20">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600')] bg-cover bg-center opacity-10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Sparkles className="w-16 h-16 text-primary mx-auto mb-6 animate-pulse" />
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-fadeIn">
-            Discover Your Style
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Shop the latest trends with premium quality products. Free shipping on orders over $50.
-          </p>
-          <Link to="/shop" className="btn-primary inline-flex items-center gap-2 group">
-            Shop Now <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
-          </Link>
-        </div>
-      </section>
+    <div className="landing-page-root">
+      
+      {/* ══════════════ HERO SECTION ══════════════ */}
+      <section className="hero-section">
+        {/* Left Side Content */}
+        <div className="hero-left-content">
+          <motion.span 
+            className="hero-eyebrow-tag"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            ✦ HAUTE COUTURE 2026
+          </motion.span>
+          
+          <motion.h1 
+            className="hero-main-title"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Discover Attire That Defines Your <span className="title-highlight">Elegance</span>
+          </motion.h1>
 
-      {/* Features */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { icon: Truck, title: 'Free Shipping', desc: 'On orders over $50', color: 'from-blue-500 to-cyan-500' },
-              { icon: Shield, title: 'Secure Payment', desc: '100% secure transactions', color: 'from-green-500 to-emerald-500' },
-              { icon: Clock, title: '24/7 Support', desc: 'Always here to help', color: 'from-purple-500 to-pink-500' }
-            ].map((feature, i) => (
-              <div key={i} className="text-center p-6 rounded-2xl bg-gray-50 hover:shadow-xl transition-all duration-300 group">
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.desc}</p>
+          <motion.p 
+            className="hero-description"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Explore carefully crafted garments designed for comfort, luxury, and modern fashion statement.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div 
+            className="hero-cta-buttons"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Link to="/shop" className="hero-btn-primary">
+              <ShoppingBag size={18} /> Shop Collection
+            </Link>
+            <button onClick={scrollToCategories} className="hero-btn-secondary">
+              Explore Categories
+            </button>
+          </motion.div>
+
+          {/* Statistics Section */}
+          <motion.div 
+            className="hero-stats-row"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <div className="stat-item">
+              <h4>10K+</h4>
+              <p>Happy Customers</p>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <h4>500+</h4>
+              <p>Premium Styles</p>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <h4 className="flex items-center gap-1 justify-center">
+                4.9 <Star size={15} className="fill-gold text-gold" />
+              </h4>
+              <p>Average Rating</p>
+            </div>
+          </motion.div>
+
+          {/* Trust Badges */}
+          <motion.div 
+            className="hero-badges-strip"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            <div className="trust-badge">
+              <Truck size={15} /> Free Shipping
+            </div>
+            <div className="trust-badge">
+              <Shield size={15} /> Secure Payment
+            </div>
+            <div className="trust-badge">
+              <RotateCcw size={15} /> Easy Returns
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Center/Right Circle & Slide Show */}
+        <div className="hero-center-slideshow" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          {/* Static Circle Backdrop */}
+          <div className="hero-static-circle-bg" style={{ position: 'relative' }}>
+            
+            {/* Smooth Slide Transitions */}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={slide}
+                src={currentSlide.image}
+                alt="Fashion Model Gown"
+                className="hero-product-center-img"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.45 }}
+              />
+            </AnimatePresence>
+
+            {/* Floating Glassmorphic Tag - Top Left */}
+            <motion.div 
+              className="glass-float-tag"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+              style={{
+                position: 'absolute',
+                top: '15%',
+                left: '-20%',
+                background: 'white',
+                padding: '12px 24px',
+                borderRadius: '999px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                color: '#B07D3A',
+                fontWeight: '600',
+                fontSize: '1rem',
+                zIndex: 10
+              }}
+            >
+              Minimalistic
+            </motion.div>
+
+            {/* Floating Glassmorphic Tag - Bottom Left */}
+            <motion.div 
+              className="glass-float-tag"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 0.3 }}
+              style={{
+                position: 'absolute',
+                bottom: '20%',
+                left: '-15%',
+                background: 'white',
+                padding: '12px 24px',
+                borderRadius: '999px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                color: '#B07D3A',
+                fontWeight: '600',
+                fontSize: '1rem',
+                zIndex: 10
+              }}
+            >
+              ¡Super cozy!
+            </motion.div>
+          </div>
+
+          {/* Right side thumbnails pop up from circle */}
+          <div className="hero-right-thumbnails" style={{
+            position: 'absolute',
+            right: '-60px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            zIndex: 10
+          }}>
+            {SLIDES.filter((_, idx) => idx !== slide).slice(0, 3).map((s, idx) => (
+              <div 
+                key={idx} 
+                className="thumb-circle" 
+                onClick={() => {
+                  const targetIdx = SLIDES.indexOf(s);
+                  if(targetIdx !== -1) setSlide(targetIdx);
+                }}
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '4px solid white',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <img src={s.image} alt="thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Featured Products */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
-            <p className="text-gray-600">Check out our most popular items this season</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/shop" className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
-              View All Products <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+        {/* Dots & Nav */}
+        <div className="hero-indicators">
+          {SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              className={`hero-dot-indicator ${idx === slide ? 'active' : ''}`}
+              onClick={() => setSlide(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
-      {/* Banner */}
-      <section className="py-16 bg-gradient-to-r from-primary to-secondary text-white">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <TrendingUp className="w-16 h-16 mx-auto mb-4" />
-          <h3 className="text-3xl font-bold mb-4">Summer Sale is Live!</h3>
-          <p className="text-white/90 mb-6 text-lg">Get up to 40% off on selected items. Limited time offer!</p>
-          <Link to="/shop" className="bg-white text-primary px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition transform hover:scale-105 inline-block">
-            Shop Sale
+      {/* ══════════════ FEATURED PRODUCTS ══════════════ */}
+      <section className="featured-products-section">
+        <div className="section-title-wrap">
+          <span className="section-eyebrow">✦ HANDPICKED SELECTION</span>
+          <h2 className="section-title">Trending Now</h2>
+          <p className="section-subtitle">
+            Uncover this season's most coveted couture styles, designed to empower.
+          </p>
+        </div>
+
+        {loadingProducts ? (
+          <div className="products-loading">
+            <div className="wishlist-loader"></div>
+            <p>Curating featured looks...</p>
+          </div>
+        ) : (
+          <div className="products-grid container-max">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product._id || product.id} product={product} />
+            ))}
+          </div>
+        )}
+
+        <div className="view-all-container" style={{ textAlign: 'center', marginTop: '3rem' }}>
+          <Link to="/shop" className="btn-primary">
+            View All Couture <ArrowRight size={16} />
           </Link>
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <Award className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h3 className="text-3xl font-bold mb-4">Join Our Newsletter</h3>
-          <p className="text-gray-600 mb-6">Get 10% off your first purchase and exclusive offers!</p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Your email address" className="flex-1 px-4 py-3 rounded-xl outline-none border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20" />
-            <button type="submit" className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition transform hover:scale-105">
-              Subscribe
-            </button>
-          </form>
+      {/* ══════════════ PREMIUM PROMOTIONAL BANNER ══════════════ */}
+      <section className="premium-promo-banner">
+        <div className="promo-banner-gradient-overlay"></div>
+        <div className="promo-banner-content-container container-max">
+          <motion.div 
+            className="promo-glass-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="promo-badge">
+              <Zap size={12} className="fill-gold" /> Exclusive Event
+            </span>
+            <h3 className="promo-title">Transform Your Wardrobe with Timeless Couture</h3>
+            <p className="promo-description">
+              Exclusive runway and ready-to-wear collections crafted carefully for modern sophistication. Enjoy limited-time pricing today.
+            </p>
+            <Link to="/shop" className="promo-cta-btn">
+              Explore Collection <ArrowRight size={16} />
+            </Link>
+          </motion.div>
         </div>
       </section>
+
+      {/* ══════════════ CATEGORIES SECTION ══════════════ */}
+      <section id="categories-section" className="categories-section-wrapper">
+        <div className="section-title-wrap">
+          <span className="section-eyebrow">✦ SHOP BY CLASSIFICATION</span>
+          <h2 className="section-title">Explore Styles</h2>
+        </div>
+        <div className="categories-grid container-max">
+          {[
+            { label: 'Dresses', img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', count: '18 Styles' },
+            { label: 'Outerwear', img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', count: '12 Styles' },
+            { label: 'Couture', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', count: '9 Styles' },
+          ].map(({ label, img, count }) => (
+            <Link
+              key={label}
+              to="/shop"
+              className="category-card-wrap"
+            >
+              <img src={img} alt={label} className="category-image" />
+              <div className="category-gradient-bg"></div>
+              <div className="category-card-content">
+                <span className="category-count">{count}</span>
+                <h4>{label}</h4>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════ ABOUT US SECTION ══════════════ */}
+      <section id="about-us" className="about-us-section">
+        <div className="about-us-grid container-max">
+          {/* Left Column - Image */}
+          <div className="about-image-column">
+            <div className="about-image-wrapper">
+              <img 
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800" 
+                alt="ShopVibe Design Studio" 
+                className="about-image"
+              />
+              <div className="about-floating-card">
+                <Award size={24} className="text-gold" />
+                <div>
+                  <h5>Award-Winning</h5>
+                  <p>Design Studio 2025</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Story, Mission, Vision */}
+          <div className="about-content-column">
+            <span className="section-eyebrow">✦ OUR ESSENCE</span>
+            <h2 className="about-main-title">Crafting Confidence Through Fine Apparel</h2>
+            <p className="about-intro-text">
+              Established with a vision to redefine modern wardrobe essentials, ShopVibe Couture combines exceptional materials with timeless silhouettes.
+            </p>
+
+            <div className="about-details-stack">
+              <div className="about-detail-item">
+                <h4>Our Story</h4>
+                <p>We began as a small boutique atelier focusing on custom bridal and evening gowns, expanding into refined daily collections without losing our touch of custom quality.</p>
+              </div>
+              <div className="about-detail-item">
+                <h4>Our Mission</h4>
+                <p>To deliver ready-to-wear pieces that fit perfectly, celebrate individuality, and prioritize responsible material sourcing for modern conscious living.</p>
+              </div>
+              <div className="about-detail-item">
+                <h4>Our Vision</h4>
+                <p>Redefining luxury fashion accessibility by proving that premium garments can be crafted ethically, and worn proudly season after season.</p>
+              </div>
+            </div>
+
+            {/* Additional Stats Counter */}
+            <div className="about-stats-grid">
+              <div className="about-stat">
+                <h3>5+</h3>
+                <p>Years Experience</p>
+              </div>
+              <div className="about-stat">
+                <h3>99%</h3>
+                <p>Satisfaction Rate</p>
+              </div>
+              <div className="about-stat">
+                <h3>500+</h3>
+                <p>Premium Styles</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
