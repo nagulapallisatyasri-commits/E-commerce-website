@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const CheckoutPage = () => {
   const { cartItems, totalAmount, clearCart } = useCart();
+  const { user, openLoginModal } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
-    address: '',
+    fullName: user?.name || '',
+    address: user?.address || '',
     city: '',
     postalCode: '',
-    phone: '',
-    email: ''
+    phone: user?.phone || '',
+    email: user?.email || ''
   });
 
   const [errors, setErrors] = useState({});
@@ -29,8 +32,14 @@ const CheckoutPage = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      toast.error('Please login to place an order');
+      openLoginModal();
+      return;
+    }
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -38,9 +47,33 @@ const CheckoutPage = () => {
       return;
     }
     
-    toast.success('Order placed successfully! 🎉');
-    clearCart();
-    setTimeout(() => navigate('/'), 2000);
+    try {
+      const orderData = {
+        user: user._id,
+        items: cartItems.map(item => ({
+          productId: item.id || item._id, // handle both cases
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image || (item.images && item.images[0]) || ''
+        })),
+        totalAmount,
+        shippingAddress: {
+          fullName: formData.fullName,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          phone: formData.phone
+        }
+      };
+
+      await axios.post('/orders', orderData);
+      toast.success('Order placed successfully! 🎉');
+      clearCart();
+      setTimeout(() => navigate('/profile'), 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to place order');
+    }
   };
 
   const handleChange = (e) => {
@@ -122,10 +155,11 @@ const CheckoutPage = () => {
               />
               {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
             </div>
-            <button type="submit" className="btn-primary w-full">Place Order</button>
+            <button type="submit" className="btn-primary w-full justify-center mt-4 py-3 text-lg">
+              Place Order
+            </button>
           </form>
         </div>
-        
         <div className="bg-white rounded-2xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
           <div className="space-y-3 max-h-96 overflow-auto">

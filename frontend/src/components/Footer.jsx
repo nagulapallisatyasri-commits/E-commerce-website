@@ -76,7 +76,7 @@ const Footer = () => {
       {/* Bottom bar */}
       <div className="footer-bottom">
         <p className="footer-copy">
-          Made with <Heart size={13} style={{ color: 'var(--pink-light)', fill: 'var(--pink-light)' }} /> by ShopVibe Team © {new Date().getFullYear()}
+          Made with <Heart size={13} style={{ color: 'var(--pink-light)', fill: 'var(--pink-light)' }} /> by Satya Sri © {new Date().getFullYear()}
         </p>
         <div className="footer-copy-links">
           <a href="#">Privacy Policy</a>

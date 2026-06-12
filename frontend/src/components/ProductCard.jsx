@@ -10,6 +10,8 @@ const ProductCard = ({ product }) => {
   const id = product._id || product.id;
   const isWishlisted = isInWishlist(id);
 
+  const mainImage = (product.images && product.images.length > 0) ? product.images[0] : product.image;
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     // Ensure both MongoDB fields and mock fields map to cart expectations
@@ -17,7 +19,7 @@ const ProductCard = ({ product }) => {
       id: id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: mainImage,
       category: product.category,
       stock: product.stock || 10,
       rating: product.rating || 4.5
@@ -33,7 +35,7 @@ const ProductCard = ({ product }) => {
       id: id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: mainImage,
       category: product.category,
       stock: product.stock || 10,
       rating: product.rating || 4.5
@@ -48,7 +50,7 @@ const ProductCard = ({ product }) => {
       <Link to={`/product/${id}`}>
         <div className="product-card-img-wrap">
           <img
-            src={product.image}
+            src={mainImage}
             alt={product.name}
             className="product-card-img"
           />

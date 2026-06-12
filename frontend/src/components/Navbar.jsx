@@ -2,14 +2,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
-import { ShoppingBag, Search, User, Menu, X, Heart } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, X, Heart, Package } from 'lucide-react';
 import { useState } from 'react';
+import OrderHistoryDrawer from './OrderHistoryDrawer';
 
 const Navbar = () => {
   const { cartItems } = useCart();
   const { user, openLoginModal } = useAuth();
   const { wishlistItems } = useWishlist();
   const [isOpen, setIsOpen] = useState(false);
+  const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,6 +106,17 @@ const Navbar = () => {
               <User size={17} />
             )}
           </button>
+          
+          {/* Orders Drawer Trigger */}
+          <button onClick={() => {
+            if (user) {
+              setIsOrderDrawerOpen(true);
+            } else {
+              openLoginModal();
+            }
+          }} className="nav-icon-btn" aria-label="Orders">
+            <Package size={17} />
+          </button>
 
           {/* Mobile toggle */}
           <button
@@ -150,6 +163,11 @@ const Navbar = () => {
           />
         </div>
       </div>
+
+      <OrderHistoryDrawer 
+        isOpen={isOrderDrawerOpen} 
+        onClose={() => setIsOrderDrawerOpen(false)} 
+      />
     </header>
   );
 };

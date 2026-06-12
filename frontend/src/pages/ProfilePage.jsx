@@ -2,9 +2,10 @@
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   User, Mail, Phone, MapPin, Camera, Trash2, 
-  LogOut, Save, ShieldAlert, ArrowLeft, Loader2 
+  LogOut, Save, ShieldAlert, ArrowLeft, Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';

@@ -4,38 +4,35 @@ import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { productsData } from '../data/products';
 
-const FALLBACK_PRODUCTS = [
-  { _id: '1', id: '1', name: 'Elegant Velvet Evening Gown', price: 189.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', rating: 4.8, stock: 12 },
-  { _id: '2', id: '2', name: 'Vibrant Satin Midi Dress', price: 95.00, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', rating: 4.7, stock: 15 },
-  { _id: '3', id: '3', name: 'Classic Beige Trench Coat', price: 149.99, category: 'Outerwear', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', rating: 4.6, stock: 10 },
-  { _id: '4', id: '4', name: 'Floral Summer Sundress', price: 79.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600', rating: 4.5, stock: 20 },
-  { _id: '5', id: '5', name: 'Structured Blazer Jacket', price: 129.99, category: "Men's Wear", image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600', rating: 4.9, stock: 8 },
-  { _id: '6', id: '6', name: 'Diamond Drop Earrings', price: 299.00, category: 'Jewelry', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600', rating: 4.9, stock: 5 },
-  { _id: '7', id: '7', name: 'Leather Crossbody Bag', price: 159.99, category: 'Bags', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=600', rating: 4.7, stock: 14 },
-  { _id: '8', id: '8', name: 'Classic Leather Loafers', price: 125.00, category: 'Shoes', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600', rating: 4.6, stock: 18 },
-  { _id: '9', id: '9', name: 'Kids Denim Overalls', price: 45.00, category: 'Kids', image: 'https://images.unsplash.com/photo-1519238263530-99b50bc56a29?w=600', rating: 4.8, stock: 20 },
-  { _id: '10', id: '10', name: 'Vintage Sunglasses', price: 55.00, category: 'Accessories', image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600', rating: 4.5, stock: 30 },
+const CATEGORY_STRUCTURE = [
+  { name: "Women's", subs: ["Skirts", "Frocks", "Jeans", "Coats", "Bodycon"] },
+  { name: "Men's", subs: ["Shirts & T-shirts", "Coats", "Shorts", "Jeans", "Hoodies", "Blazers"] },
+  { name: "Beauty", subs: [] },
+  { name: "Footwear", subs: ["Men's", "Women's"] },
+  { name: "Accessories", subs: ["Men's", "Women's"] },
+  { name: "Perfumes", subs: [] },
+  { name: "Bags", subs: [] }
 ];
+
+// Fallback products generation removed in favor of productsData
 
 const ShopPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_STRUCTURE[0].name);
+  const [selectedSubCategory, setSelectedSubCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('/products');
-        if (res.data && res.data.length > 0) {
-          setProducts(res.data);
-        } else {
-          setProducts(FALLBACK_PRODUCTS);
-        }
+        // Use products from data file
+        setProducts(productsData);
       } catch (error) {
         console.error('Error fetching shop products:', error);
-        setProducts(FALLBACK_PRODUCTS);
+        setProducts(productsData);
       } finally {
         setLoading(false);
       }
@@ -43,12 +40,23 @@ const ShopPage = () => {
     fetchProducts();
   }, []);
 
-  const categories = ['all', ...new Set(products.map(p => p.category))];
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat);
+    setSelectedSubCategory('all');
+  };
+
+  const categories = CATEGORY_STRUCTURE.map(c => c.name);
   
+  const currentCategoryObj = CATEGORY_STRUCTURE.find(c => c.name === selectedCategory);
+  const subCategories = currentCategoryObj && currentCategoryObj.subs.length > 0 
+    ? ['all', ...currentCategoryObj.subs] 
+    : [];
+
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const matchesCategory = product.category === selectedCategory;
+    const matchesSubCategory = selectedSubCategory === 'all' || product.subCategory === selectedSubCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesSubCategory && matchesSearch;
   });
 
   if (loading) {
@@ -80,18 +88,39 @@ const ShopPage = () => {
           />
         </div>
 
-        {/* Filters */}
+        {/* Main Category Filters */}
         <div className="shop-category-filters" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           {categories.map(cat => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
               className={`filter-btn ${selectedCategory === cat ? 'active' : ''}`}
             >
               {cat}
             </button>
           ))}
         </div>
+
+        {/* Sub Category Filters (if applicable) */}
+        {subCategories.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="shop-subcategory-filters" 
+            style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.5rem', marginTop: '-1rem' }}
+          >
+            {subCategories.map(sub => (
+              <button
+                key={sub}
+                onClick={() => setSelectedSubCategory(sub)}
+                className={`filter-btn sub-filter-btn ${selectedSubCategory === sub ? 'active' : ''}`}
+                style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem', borderRadius: '20px' }}
+              >
+                {sub}
+              </button>
+            ))}
+          </motion.div>
+        )}
       </div>
       
       <div className="shop-products-grid-container container-max">

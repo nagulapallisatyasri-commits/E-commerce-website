@@ -9,27 +9,27 @@ import {
 import ProductCard from '../components/ProductCard';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Hero Fashion Slides
+// Hero Fashion Slides - 2 Women's, 2 Men's
 const SLIDES = [
   {
-    image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800',
-    tagTop: 'New Collection ✦',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVPDL-l___apN1ayBw-SdnUE1ZBDZ0LbQr1Bw7Enzjbw&s=10',
+    tagTop: '✦ New Collection ✦',
     tagBot: 'Luxury Satin',
   },
   {
-    image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800',
-    tagTop: 'Best Seller 🔥',
-    tagBot: 'Summer Chic',
+    image: 'https://assets.gqindia.com/photos/699959bcfe368ed421aa4d9d/master/w_2560%2Cc_limit/JUNG%2520KOOK%2520HUBLOT%2520GLOBAL%2520BRAND%2520AMBASSADOR%2520(3).jpg',
+    tagTop: '🔥 Best Seller',
+    tagBot: 'Men\'s Summer Chic',
   },
   {
     image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
     tagTop: 'Premium Quality',
-    tagBot: 'Evening Wear ✦',
+    tagBot: '✦ Evening Wear ✦',
   },
   {
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800',
-    tagTop: 'Buy Now 🛍️',
-    tagBot: 'Boho Maxi',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdMgJVPeED8OnkaLERluuF_rIChLxfFN-7-FDrnVReQg&s=10',
+    tagTop: '🛍️ Buy Now',
+    tagBot: 'Men\'s Boho Style',
   },
 ];
 
@@ -98,12 +98,12 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page-root">
-      
+
       {/* ══════════════ HERO SECTION ══════════════ */}
       <section className="hero-section">
         {/* Left Side Content */}
         <div className="hero-left-content">
-          <motion.span 
+          <motion.span
             className="hero-eyebrow-tag"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -111,8 +111,8 @@ const LandingPage = () => {
           >
             ✦ HAUTE COUTURE 2026
           </motion.span>
-          
-          <motion.h1 
+
+          <motion.h1
             className="hero-main-title"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -121,7 +121,7 @@ const LandingPage = () => {
             Discover Attire That Defines Your <span className="title-highlight">Elegance</span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             className="hero-description"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -131,7 +131,7 @@ const LandingPage = () => {
           </motion.p>
 
           {/* CTA Buttons */}
-          <motion.div 
+          <motion.div
             className="hero-cta-buttons"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -146,7 +146,7 @@ const LandingPage = () => {
           </motion.div>
 
           {/* Statistics Section */}
-          <motion.div 
+          <motion.div
             className="hero-stats-row"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -171,7 +171,7 @@ const LandingPage = () => {
           </motion.div>
 
           {/* Trust Badges */}
-          <motion.div 
+          <motion.div
             className="hero-badges-strip"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -192,65 +192,82 @@ const LandingPage = () => {
         {/* Center/Right Circle & Slide Show */}
         <div className="hero-center-slideshow" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           {/* Static Circle Backdrop */}
-          <div className="hero-static-circle-bg" style={{ position: 'relative' }}>
-            
-            {/* Smooth Slide Transitions */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={slide}
-                src={currentSlide.image}
-                alt="Fashion Model Gown"
-                className="hero-product-center-img"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.45 }}
-              />
-            </AnimatePresence>
+          <div className="hero-static-circle-bg" style={{ position: 'relative', overflow: 'visible' }}>
 
-            {/* Floating Glassmorphic Tag - Top Left */}
-            <motion.div 
+            {/* Circular clipped image wrapper */}
+            <div style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              position: 'relative'
+            }}>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={slide}
+                  src={currentSlide.image}
+                  alt="Fashion Model"
+                  className="hero-product-center-img"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.45 }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </AnimatePresence>
+            </div>
+
+            {/* Floating Tag - Top (sits on top of image, top-right) */}
+            <motion.div
               className="glass-float-tag"
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
               style={{
                 position: 'absolute',
-                top: '15%',
-                left: '-20%',
-                background: 'white',
+                top: '8%',
+                right: '5%',
+                background: 'linear-gradient(135deg, #FDF6EC 0%, #FAEFE0 100%)',
+                border: '1px solid rgba(176, 125, 58, 0.25)',
                 padding: '12px 24px',
                 borderRadius: '999px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(176,125,58,0.18)',
                 color: '#B07D3A',
                 fontWeight: '600',
                 fontSize: '1rem',
-                zIndex: 10
+                zIndex: 20,
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
               }}
             >
-              Minimalistic
+              {currentSlide.tagTop}
             </motion.div>
 
-            {/* Floating Glassmorphic Tag - Bottom Left */}
-            <motion.div 
+            {/* Floating Tag - Bottom (sits on top of image, bottom-left) */}
+            <motion.div
               className="glass-float-tag"
               animate={{ y: [0, 8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 0.3 }}
               style={{
                 position: 'absolute',
-                bottom: '20%',
-                left: '-15%',
-                background: 'white',
+                bottom: '12%',
+                left: '5%',
+                background: 'linear-gradient(135deg, #FDF6EC 0%, #FAEFE0 100%)',
+                border: '1px solid rgba(176, 125, 58, 0.25)',
                 padding: '12px 24px',
                 borderRadius: '999px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                boxShadow: '0 8px 32px rgba(176,125,58,0.18)',
                 color: '#B07D3A',
                 fontWeight: '600',
                 fontSize: '1rem',
-                zIndex: 10
+                zIndex: 20,
+                whiteSpace: 'nowrap'
               }}
             >
-              ¡Super cozy!
+              {currentSlide.tagBot}
             </motion.div>
+
           </div>
 
           {/* Right side thumbnails pop up from circle */}
@@ -263,12 +280,12 @@ const LandingPage = () => {
             zIndex: 10
           }}>
             {SLIDES.filter((_, idx) => idx !== slide).slice(0, 3).map((s, idx) => (
-              <div 
-                key={idx} 
-                className="thumb-circle" 
+              <div
+                key={idx}
+                className="thumb-circle"
                 onClick={() => {
                   const targetIdx = SLIDES.indexOf(s);
-                  if(targetIdx !== -1) setSlide(targetIdx);
+                  if (targetIdx !== -1) setSlide(targetIdx);
                 }}
                 style={{
                   width: '80px',
@@ -336,7 +353,7 @@ const LandingPage = () => {
       <section className="premium-promo-banner">
         <div className="promo-banner-gradient-overlay"></div>
         <div className="promo-banner-content-container container-max">
-          <motion.div 
+          <motion.div
             className="promo-glass-card"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -365,9 +382,9 @@ const LandingPage = () => {
         </div>
         <div className="categories-grid container-max">
           {[
-            { label: 'Dresses', img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', count: '18 Styles' },
-            { label: 'Outerwear', img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', count: '12 Styles' },
-            { label: 'Couture', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', count: '9 Styles' },
+            { label: 'Dresses', img: 'https://i.pinimg.com/1200x/3f/5d/2e/3f5d2e6ba333352fecea1af2d1b4c77a.jpg', count: '18 Styles' },
+            { label: 'Outerwear', img: 'https://newsimg.koreatimes.co.kr/2025/12/22/0937dd91-26d1-4405-b8fe-1a19d372577e.jpg', count: '12 Styles' },
+            { label: 'Couture', img: 'https://stylerave.com/wp-content/uploads/2024/07/04345184-792e-44b4-af42-266d65ff1764-e1720630469932.jpg', count: '9 Styles' },
           ].map(({ label, img, count }) => (
             <Link
               key={label}
@@ -391,9 +408,9 @@ const LandingPage = () => {
           {/* Left Column - Image */}
           <div className="about-image-column">
             <div className="about-image-wrapper">
-              <img 
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800" 
-                alt="ShopVibe Design Studio" 
+              <img
+                src="https://hips.hearstapps.com/hmg-prod/images/f16c429f-6b38-4f2e-ad29-f5e277bf1bdb.jpeg?crop=0.667xw:1xh;0.19xw,0xh&resize=1120:*"
+                alt="ShopVibe Design Studio"
                 className="about-image"
               />
               <div className="about-floating-card">

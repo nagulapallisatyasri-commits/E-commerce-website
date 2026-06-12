@@ -4,10 +4,11 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   items: [{
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    productId: { type: String },
     name: String,
     price: Number,
-    quantity: Number
+    quantity: Number,
+    image: String
   }],
   totalAmount: { type: Number, required: true },
   shippingAddress: {
