@@ -33,13 +33,42 @@ const SLIDES = [
   },
 ];
 
-// Fallback Featured Products (Fashion/Dresses theme)
+// Fallback Featured Products (shown if backend is unreachable)
 const FALLBACK_FEATURED = [
-  { _id: '1', id: '1', name: 'Elegant Velvet Evening Gown', price: 189.99, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', rating: 4.8, category: 'Dresses' },
-  { _id: '2', id: '2', name: 'Vibrant Satin Midi Dress', price: 95.00, image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', rating: 4.7, category: 'Dresses' },
-  { _id: '3', id: '3', name: 'Classic Beige Trench Coat', price: 149.99, image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', rating: 4.6, category: 'Outerwear' },
-  { _id: '4', id: '4', name: 'Floral Summer Sundress', price: 79.99, image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600', rating: 4.5, category: 'Dresses' },
+  {
+    _id: '1', id: '1',
+    name: 'Gucci GG Marmont',
+    price: 259.99,
+    images: ['https://images.unsplash.com/photo-1548036328-c9fa89d128fa?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bHV4dXJ5JTIwaGFuZGJhZ3xlbnwwfHwwfHx8MA%3D%3D'],
+    rating: 4.0,
+    category: "Women's"
+  },
+  {
+    _id: '2', id: '2',
+    name: 'TIR-TIR Mask-Fit Red Cushion Foundation',
+    price: 42.99,
+    images: ['https://assets.myntassets.com/w_412,q_50,,dpr_3,fl_progressive,f_webp/assets/images/2025/MARCH/20/0cCz3jXt_82c147f8e4714e01b2568db62654f876.jpg'],
+    rating: 4.8,
+    category: "Women's"
+  },
+  {
+    _id: '3', id: '3',
+    name: 'Saint Laurent Opyum Sandals in Patent Leather(YSL)',
+    price: 1658.74,
+    images: ['https://venusbypayal.com/cdn/shop/files/EA142052-E465-4C78-B827-E4C926796EEC.jpg?v=1773521701&width=2048'],
+    rating: 4.3,
+    category: "Women's"
+  },
+  {
+    _id: '4', id: '4',
+    name: 'Chanel Coco Mademoiselle',
+    price: 160,
+    images: ['https://images.unsplash.com/photo-1708733145706-82da0d0596e9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhbmVsJTIwcGVyZnVtZXxlbnwwfHwwfHx8MA=='],
+    rating: 5.0,
+    category: "Women's"
+  },
 ];
+
 
 const LandingPage = () => {
   const [slide, setSlide] = useState(0);

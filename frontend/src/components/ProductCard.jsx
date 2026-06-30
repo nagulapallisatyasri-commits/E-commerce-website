@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { ShoppingCart, Star, Heart } from 'lucide-react';
@@ -6,11 +6,15 @@ import { ShoppingCart, Star, Heart } from 'lucide-react';
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const location = useLocation();
   
   const id = product._id || product.id;
   const isWishlisted = isInWishlist(id);
 
   const mainImage = (product.images && product.images.length > 0) ? product.images[0] : product.image;
+
+  // Get the full path including search params
+  const fromPath = `${location.pathname}${location.search}`;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -47,7 +51,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="product-card">
-      <Link to={`/product/${id}`}>
+      <Link to={`/product/${id}`} state={{ from: fromPath }}>
         <div className="product-card-img-wrap">
           <img
             src={mainImage}
@@ -66,7 +70,7 @@ const ProductCard = ({ product }) => {
       </Link>
 
       <div className="product-card-body">
-        <Link to={`/product/${id}`} className="product-card-name">
+        <Link to={`/product/${id}`} state={{ from: fromPath }} className="product-card-name">
           {product.name}
         </Link>
 
@@ -99,4 +103,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default ProductCard;

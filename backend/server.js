@@ -26,28 +26,74 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // Sample fashion products data
+// ✏️  Edit this array to change the Trending Now section. First image = shown on card.
 const sampleProducts = [
-  { name: 'Elegant Velvet Evening Gown', price: 189.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600', rating: 4.8, stock: 12, description: 'A luxurious velvet evening gown.' },
-  { name: 'Vibrant Satin Midi Dress', price: 95.00, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600', rating: 4.7, stock: 15, description: 'Crafted from premium heavy-weight satin.' },
-  { name: 'Classic Beige Trench Coat', price: 149.99, category: 'Outerwear', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600', rating: 4.6, stock: 10, description: 'A timeless double-breasted trench coat.' },
-  { name: 'Floral Summer Sundress', price: 79.99, category: "Women's Dresses", image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600', rating: 4.5, stock: 20, description: 'Embrace warm sunny days in this breathable cotton sundress.' },
-  { name: 'Structured Blazer Jacket', price: 129.99, category: "Men's Wear", image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600', rating: 4.9, stock: 8, description: 'An ultra-chic blazer jacket.' },
-  { name: 'Diamond Drop Earrings', price: 299.00, category: 'Jewelry', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600', rating: 4.9, stock: 5, description: 'Elegant drop earrings featuring high-quality crystals.' },
-  { name: 'Leather Crossbody Bag', price: 159.99, category: 'Bags', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=600', rating: 4.7, stock: 14, description: 'A sleek, minimalist leather bag for everyday use.' },
-  { name: 'Classic Leather Loafers', price: 125.00, category: 'Shoes', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600', rating: 4.6, stock: 18, description: 'Comfortable and stylish leather loafers.' },
-  { name: 'Kids Denim Overalls', price: 45.00, category: 'Kids', image: 'https://images.unsplash.com/photo-1519238263530-99b50bc56a29?w=600', rating: 4.8, stock: 20, description: 'Durable and cute denim overalls for kids.' },
-  { name: 'Vintage Sunglasses', price: 55.00, category: 'Accessories', image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600', rating: 4.5, stock: 30, description: 'Retro-inspired sunglasses with UV protection.' }
+  {
+    name: 'Gucci GG Marmont',
+    price: 259.99,
+    category: "Women's",
+    subCategory: 'Handbags',
+    images: [
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bHV4dXJ5JTIwaGFuZGJhZ3xlbnwwfHwwfHx8MA%3D%3D',
+      'https://i.pinimg.com/736x/96/7d/04/967d04f28203b2138adb110a3683af73.jpg',
+      'https://dbz-images.dubizzle.com/images/2026/06/04/64c356e9c5014769b8e512ed8a0d4ad7-.jpeg?impolicy=dpc'
+    ],
+    rating: 4.0,
+    stock: 5,
+    description: 'This black Gucci GG Marmont matelassé shoulder bag is crafted from leather with a signature chevron quilt pattern and features distinct gold-tone Double G hardware.'
+  },
+  {
+    name: 'TIR-TIR Mask-Fit Red Cushion Foundation',
+    price: 45.99,
+    category: "Women's",
+    subCategory: 'Beauty',
+    images: [
+      'https://assets.myntassets.com/w_412,q_50,,dpr_3,fl_progressive,f_webp/assets/images/2025/MARCH/20/0cCz3jXt_82c147f8e4714e01b2568db62654f876.jpg',
+      'https://assets.myntassets.com/assets/images/32768640/2025/2/17/71a09996-e740-4b3e-82b3-f4cd4b535d4e1739764892520-TIR-TIR-Mask-Fit-Red-Cushion-Foundation---Camel-27-N-7041739-2.jpg',
+      'https://m.media-amazon.com/images/I/61wKnkoglyL.jpg'
+    ],
+    rating: 4.8,
+    stock: 15,
+    description: 'This cushion foundation is designed to provide a flawless, "glass skin" effect while remaining lightweight and breathable. It is particularly celebrated for its durability, offering up to 72 hours of fade-resistant wear.'
+  },
+  {
+    name: 'Saint Laurent Opyum Sandals in Patent Leather(YSL)',
+    price: 1658.74,
+    category: "Women's",
+    subCategory: 'Shoes',
+    images: [
+      'https://venusbypayal.com/cdn/shop/files/EA142052-E465-4C78-B827-E4C926796EEC.jpg?v=1773521701&width=2048',
+      'https://img.freeup.app/fit-in/600x600/filters:upscale()/af5ed379df74d01c09625a22356a8fda.jpg',
+      'https://femi9byas.com/cdn/shop/files/CF8361FC-0A20-484D-B160-1EB36D6EE2F7.jpg?v=1774339731'
+    ],
+    rating: 4.3,
+    stock: 14,
+    description: 'The Opyum sandals are a bold, instantly recognizable statement piece from Saint Laurent. Their most striking feature is the sculpted 85mm (approx. 3.5 inches) heel, which is expertly crafted in the shape of the iconic gold-tone YSL logo plaque.'
+  },
+  {
+    name: 'Chanel Coco Mademoiselle',
+    price: 160,
+    category: "Women's",
+    subCategory: 'Perfumes',
+    images: [
+      'https://images.unsplash.com/photo-1708733145706-82da0d0596e9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhbmVsJTIwcGVyZnVtZXxlbnwwfHwwfHx8MA==',
+      'https://i.pinimg.com/736x/36/75/bf/3675bf8339458aa21e502003fbe7f0ee.jpg',
+      'https://miro.medium.com/0*Pr5UeLo7WadmGSZh'
+    ],
+    rating: 5.0,
+    stock: 10,
+    description: 'Chanel Coco Mademoiselle Eau de Parfum, an iconic ambery-floral fragrance for women launched in 2001. It is designed to reflect the spirit of an independent, bold, and modern woman. '
+  }
 ];
 
-// Database seeding function
+
+// Database seeding function — always re-seeds on server start
+// ✏️  Edit the sampleProducts array above, then restart the backend to see changes in Trending Now
 const seedProducts = async () => {
   try {
-    const count = await Product.countDocuments();
-    if (count < 10) {
-      await Product.deleteMany({});
-      await Product.insertMany(sampleProducts);
-      console.log('🌱 Database seeded with fashion products');
-    }
+    await Product.deleteMany({});
+    await Product.insertMany(sampleProducts);
+    console.log('🌱 Database re-seeded with latest fashion products');
   } catch (error) {
     console.error('❌ Error seeding products:', error.message);
   }
